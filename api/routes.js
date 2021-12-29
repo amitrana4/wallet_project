@@ -3,8 +3,12 @@
 const controller = require('./controller');
 
 module.exports = function(app) {
-   app.route('/image/:file')
-       .get(controller.convertFile);
-   app.route('/image')
-       .post(controller.saveFile);
+    app.route('/setup')
+       .post(controller.setup);
+    app.route('/transact/:id')
+        .post(controller.transact);
+    app.route('/transaction')
+        .get(controller.transactions);
+    app.route('/wallet/:id')
+        .get(controller.wallet);
 };

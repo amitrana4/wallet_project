@@ -1,45 +1,48 @@
 'use strict';
 
-var utils = require('../utils');
 const path = require("path");
 const fs = require('fs')
 const stream = require('stream')
+const service = require('./service');
 
 
 var controllers = {
-    saveFile: async function(req, res) {
-        utils.saveImage.uploadFile(req, res, function(err, dist) {
-            if (err) {
-                res.send(err);
-            }
-            else {
-                res.status(200).send({status: 200, message: dist});
-            }
-        });
-    },
-    convertFile: async function(req, res) {
-        try {
-            const pathToImg = await utils.imageConverter.convertFile(req);
-            if(pathToImg.status === 'err'){
-                return res.send(pathToImg)
-            }
-            else {
-                const r = fs.createReadStream(path.join(__dirname, pathToImg.message)) 
-                const ps = new stream.PassThrough()
-                stream.pipeline(
-                r,
-                ps, 
-                (err) => {
-                    if (err) {
-                    console.log(err) 
-                    return res.sendStatus(400); 
-                    }
-                })
-                ps.pipe(res) 
-            }
+    setup: async (req, res) => {
+        try{
+            const response = await service.setup(req.body)
+            res.status(200).send({status: 200, message: 'Success', body: response});
         }
-        catch (err){
-            res.send(err);
+        catch(e){
+            res.send(e);
+        }
+    },
+    transact: async (req, res) => {
+        try{
+            const { id } = req.params;
+            const response = await service.transact(req.body, id)
+            res.status(200).send({status: 200, message: 'Success', body: response});
+        }
+        catch(e){
+            res.send(e);
+        }
+    },
+    wallet: async (req, res) => {
+        try{
+            const { id } = req.params;
+            const response = await service.wallet(id)
+            res.status(200).send({status: 200, message: 'Success', body: response});
+        }
+        catch(e){
+            res.send(e);
+        }
+    },
+    transactions: async (req, res) => {
+        try{
+            const response = await service.transactions()
+            res.status(200).send({status: 200, message: 'Success', body: response});
+        }
+        catch(e){
+            res.send(e);
         }
     },
 };

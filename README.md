@@ -7,15 +7,15 @@
 
 # node-js-sample
 
-A image storage Node.js app using [Express 4](http://expressjs.com/).
+A sample wallet storage Node.js app using [Express 4](http://expressjs.com/).
 
 ## Running Locally
 
 Make sure you have [Node.js](http://nodejs.org/) installed.
 
 ```sh
-git clone https://github.com/amitranawits/imageConverter.git # or clone your own fork
-cd imageConverter
+git clone https://github.com/amitrana4/sample_wallet.git # or clone your own fork
+cd sampleWallet
 npm install
 npm start
 ```
@@ -25,8 +25,8 @@ Your app should now be running on [localhost:3000](http://localhost:3000/).
 
 ## Running test cases
 
-Sample file is in testImage folder
-npm test will pick the image from testImage folder, add new key with image name and place it to Images folder with new extenstion giver in params.
+Sample file is in test Project
+npm test will pick the create a wallet and perform CRU operations
 
 ```sh
 npm test
@@ -34,12 +34,18 @@ npm test
 
 ## Documentation
 
-Two api's are there
+Four api's are there
 
-- GET image
-/image/id=123.jpeg
-id will be given while saving image api.
+- POST wallet
+http://localhost:3000/setup
+Body: {"description":"test", "amount": 10, "welletId": 123}
 
-- POST image
+- POST update wallet
+http://localhost:3000/transact/123
+{"description":"test", "balance": 10}
 
-files = multiple files
+- GET  Wallet All
+http://localhost:3000/transactions
+
+GET- By Id
+http://localhost:3000/wallet

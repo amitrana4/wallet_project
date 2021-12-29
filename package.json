@@ -1,22 +1,22 @@
 {
-  "name": "processimage",
+  "name": "testproject",
   "version": "1.0.0",
-  "description": "Process image with different extension",
+  "description": "CRUD operation for wallet",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha utils/__test__/*.js"
+    "test": "mocha utils/__test__/*.js  --timeout 15000"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "chai": "^4.3.0",
+    "body-parser": "^1.19.1",
+    "chai": "^4.3.4",
     "chai-http": "^4.3.0",
     "express": "^4.17.1",
     "glob": "^7.1.6",
     "jimp": "^0.16.1",
-    "mocha": "^8.3.0",
+    "mocha": "^8.4.0",
     "multer": "^1.4.2",
     "request": "^2.88.2",
     "uuid": "^8.3.2"
