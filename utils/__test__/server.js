@@ -21,10 +21,20 @@ describe('Sample', () => {
             .post('/setup')
             .send(constant.requestBody)
             .end((err, res) => {
-              walletId = res.body.body.id
+              walletId = res.body.body.insertedId
               expect(res.body.status).to.equal(200);
             });
       })
+
+      function delay(interval) 
+      {
+        return it('should delay', done => 
+        {
+            setTimeout(() => done(), interval)
+
+        }).timeout(interval + 100) // The extra 100ms should guarantee the test will not fail due to exceeded timeout
+      }
+      delay(2000) // delay to be sure that record created in mongo
 
       it('transact', async () => {
         chai.request(server)
@@ -45,7 +55,7 @@ describe('Sample', () => {
 
       it('Wallet', async () => {
         chai.request(server)
-        .get(`/wallet/${constant.requestBody.walletId}`)
+        .get(`/wallet/${walletId}`)
         .end((err, res) => {
           expect(res.body.status).to.equal(200);
         });

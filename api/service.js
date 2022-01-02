@@ -1,88 +1,71 @@
 const config = require("../database/config.json");
 const path = require("path");
+const { MongoClient } = require("mongodb");
 const fs = require('fs');
+var ObjectId = require('mongodb').ObjectId
+
+const client = new MongoClient("mongodb://localhost:27017");
 
 var service = {
     setup: async (data) => {
-        return new Promise((resolve, reject) => {
-            data.id = Math.floor(1000 + Math.random() * 9000);
+        return new Promise(async (resolve, reject) => {
             data.balance = 0
             data.updateAt = new Date()
-            fs.readFile(path.join(__dirname,'../database/config.json'), (err, fileData) => {
-                if (err) {
-                    return reject(err)
-                }
-                const object = JSON.parse(fileData);
-                object.push(data)
-                const jsonString = JSON.stringify(object)
-            fs.writeFile(path.join(__dirname,'../database/config.json'), jsonString, err => {
-                if (err) {
-                    return reject(err)
-                } else {
-                    return resolve(data)
-                }
-            })
+            await client.connect();
+            const database = client.db("wallet_sample");
+            const collection = database.collection("wallet");
+            const result = await collection.insertOne(data);
+            return resolve(result)
         })
-    })
     },
     transact: async (data, id) => {
-        return new Promise((resolve, reject) => {
-            fs.readFile(path.join(__dirname,'../database/config.json'), (err, fileData) => {
-                if (err) {
-                    return reject(err)
-                }
-                  const object = JSON.parse(fileData);
-                  for(let i = 0; i < object.length; i++){
-                      if(object[i].id == id){
-                        data.balance = data.balance + object[i].balance
-                        data.walletId = object[i].walletId
-                        data.id = object[i].id
-                      }
-                  }
-                  if(!data.walletId){
-                    return resolve("No match found")
-                  }
-                  data.updateAt = new Date()
-                  data.updatedAt = Math.floor(1000 + Math.random() * 9000);
-                  object.push(data)
-                const jsonString = JSON.stringify(object)
-                fs.writeFile(path.join(__dirname,'../database/config.json'), jsonString, err => {
-                    if (err) {
-                        return reject(err)
-                    } else {
-                        return resolve(data)
-                    }
-                })
-        })
-    });
+        return new Promise(async (resolve, reject) => {
+            try{
+                await client.connect();
+                const database = client.db("wallet_sample");
+                const collection = database.collection("wallet");
+                const res = collection.updateOne({_id: new ObjectId(id)}, {$set: data}, {upsert:true})
+                return resolve(res)
+            }
+            catch(e){
+                return reject(e)
+            }
+        });
     },
     wallet: async (id) => {
-        return new Promise((resolve, reject) => {
-            fs.readFile(path.join(__dirname,'../database/config.json'), (err, fileData) => {
-                if (err) {
-                    return reject(err)
-                }
-                let finalObj = []
-                const object = JSON.parse(fileData);
-                for(let i = 0; i < object.length; i++){
-                    if(object[i].walletId == id){
-                    finalObj.push(object[i])
-                    }
-                }
-                return resolve(finalObj)
-            })
+        return new Promise(async (resolve, reject) => {
+            try{
+                await client.connect();
+                const database = client.db("wallet_sample");
+                const collection = database.collection("wallet");
+                const finalResult = collection.find({_id: ObjectId(id)})
+                let items = [];
+                await finalResult.forEach(function(doc){
+                    items.push(doc);
+                });
+                return resolve(JSON.stringify(items))
+            }
+            catch(e){
+                reject(e)
+            }
         })
     },
     transactions: async () => {
-        return new Promise((resolve, reject) => {
-            fs.readFile(path.join(__dirname,'../database/config.json'), (err, fileData) => {
-                if (err) {
-                    return reject(err)
-                }
-                else{
-                    return resolve(JSON.parse(fileData))
-                }
-            })
+        return new Promise(async (resolve, reject) => {
+            try{
+                await client.connect();
+                const database = client.db("wallet_sample");
+                const collection = database.collection("wallet");
+                const finalResult = collection.find({}, {})
+                let items = [];
+                await finalResult.forEach(function(doc){
+                    items.push(doc);
+                });
+                return resolve(JSON.stringify(items))
+            }
+            catch(e){
+                reject(e)
+            }
         })
     }
 }
