@@ -24,6 +24,12 @@ var service = {
                 await client.connect();
                 const database = client.db("wallet_sample");
                 const collection = database.collection("wallet");
+                const finalResult = collection.find({_id: ObjectId(id)})
+                let items = [];
+                await finalResult.forEach(function(doc){
+                    items.push(doc);
+                });
+                data.amount = data.amount + items[0].amount;
                 const res = collection.updateOne({_id: new ObjectId(id)}, {$set: data}, {upsert:true})
                 return resolve(res)
             }
